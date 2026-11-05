@@ -54,9 +54,9 @@ impl Source for RpmSource {
     }
 
     fn details(&self, pkg: &Package) -> anyhow::Result<PackageDetails> {
-        let info = run(Command::new("rpm").args(["-qi", &pkg.name])).unwrap_or_default();
-        let deps = run(Command::new("rpm").args(["-qR", &pkg.name])).unwrap_or_default();
-        let files = run(Command::new("rpm").args(["-ql", &pkg.name])).unwrap_or_default();
+        let info = run(Command::new("rpm").args(["-qi", &pkg.name]))?;
+        let deps = run(Command::new("rpm").args(["-qR", &pkg.name]))?;
+        let files = run(Command::new("rpm").args(["-ql", &pkg.name]))?;
 
         let mut d = PackageDetails {
             dependencies: deps

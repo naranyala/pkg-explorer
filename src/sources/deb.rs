@@ -114,13 +114,12 @@ impl Source for DebSource {
             }
         }
 
-        if let Ok(list) = run(Command::new("dpkg").args(["-L", &pkg.name])) {
-            d.files = list
-                .lines()
-                .filter(|l| !l.trim().is_empty())
-                .map(Into::into)
-                .collect();
-        }
+        let list = run(Command::new("dpkg").args(["-L", &pkg.name]))?;
+        d.files = list
+            .lines()
+            .filter(|l| !l.trim().is_empty())
+            .map(Into::into)
+            .collect();
         Ok(d)
     }
 }
