@@ -1,7 +1,6 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
 mod app;
 mod cli;
+mod dependency_map;
 mod extract;
 mod models;
 mod sources;

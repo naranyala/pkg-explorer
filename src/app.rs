@@ -1,3 +1,4 @@
+use crate::dependency_map;
 use crate::extract;
 use crate::models::{Package, PackageDetails, PkgKind, ScanResult};
 use crate::sources::{self, Source};
@@ -438,6 +439,14 @@ impl PkgApp {
                                 }
                             });
                     });
+                    ui.add_space(6.0);
+                    if let Some(clicked_idx) =
+                        dependency_map::render(ui, &p, &d.dependencies, &self.packages)
+                    {
+                        let pkg = self.packages[clicked_idx].clone();
+                        self.selected = Some(clicked_idx);
+                        self.start_details(&pkg, ctx);
+                    }
                 }
 
                 if !d.files.is_empty() {
@@ -540,3 +549,4 @@ mod tests {
         pump(&mut app, &ctx, 5);
     }
 }
+
