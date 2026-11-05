@@ -8,6 +8,7 @@ pub enum PkgKind {
     Rpm,
     Flatpak,
     Brew,
+    Pacman,
 }
 
 impl PkgKind {
@@ -17,6 +18,7 @@ impl PkgKind {
             PkgKind::Rpm => "rpm",
             PkgKind::Flatpak => "flatpak",
             PkgKind::Brew => "brew",
+            PkgKind::Pacman => "pacman",
         }
     }
 }

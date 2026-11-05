@@ -36,7 +36,7 @@ pub fn run(args: &[String]) {
         }
         Some("--extract") => {
             if args.len() != 4 {
-                fail("usage: pkg-explorer --extract <deb|rpm|flatpak|brew> <name> <dest-dir>");
+                fail("usage: pkg-explorer --extract <deb|rpm|flatpak|brew|pacman> <name> <dest-dir>");
             }
             let kind = parse_kind(&args[1]).unwrap_or_else(|e| fail(&e));
             let name = &args[2];
@@ -68,8 +68,8 @@ pub fn run(args: &[String]) {
         }
         Some("--help") | Some("-h") => {
             println!("pkg-explorer — GUI by default; CLI helpers:");
-            println!("  pkg-explorer --list [deb|rpm|flatpak|brew]");
-            println!("  pkg-explorer --extract <deb|rpm|flatpak|brew> <name> <dest-dir>");
+            println!("  pkg-explorer --list [deb|rpm|flatpak|brew|pacman]");
+            println!("  pkg-explorer --extract <deb|rpm|flatpak|brew|pacman> <name> <dest-dir>");
             std::process::exit(0);
         }
         _ => fail("try: pkg-explorer --help"),
@@ -82,6 +82,7 @@ fn parse_kind(s: &str) -> Result<PkgKind, String> {
         "rpm" => Ok(PkgKind::Rpm),
         "flatpak" => Ok(PkgKind::Flatpak),
         "brew" | "homebrew" => Ok(PkgKind::Brew),
+        "pacman" | "arch" => Ok(PkgKind::Pacman),
         other => Err(format!("unknown kind '{other}'")),
     }
 }

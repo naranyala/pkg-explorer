@@ -27,7 +27,7 @@ pub struct PkgApp {
     status: String,
 
     search: String,
-    kind_enabled: [bool; 4],
+    kind_enabled: [bool; 5],
 
     selected: Option<usize>,
     details: Option<(String, PackageDetails)>,
@@ -55,7 +55,7 @@ impl PkgApp {
             pending_sources: 0,
             status: String::new(),
             search: String::new(),
-            kind_enabled: [true; 4],
+            kind_enabled: [true; 5],
             selected: None,
             details: None,
             details_loading: false,
@@ -69,17 +69,23 @@ impl PkgApp {
     }
 
     fn start_scan(&mut self, ctx: &egui::Context) {
-        self.scanning = true;
-        self.status = "Scanning installed packages…".into();
         self.scan_errors.clear();
         self.packages.clear();
         self.selected = None;
         self.details = None;
 
-        let tx = self.tx.clone();
-        let ctx = ctx.clone();
         let sources = sources::available_sources();
         self.pending_sources = sources.len();
+        if sources.is_empty() {
+            self.scanning = false;
+            self.status = "No supported package managers found".into();
+            return;
+        }
+
+        self.scanning = true;
+        self.status = "Scanning installed packages…".into();
+        let tx = self.tx.clone();
+        let ctx = ctx.clone();
         std::thread::spawn(move || {
             for src in sources {
                 let source = src.name().to_string();
@@ -215,7 +221,7 @@ impl PkgApp {
     fn top_bar(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
         ui.add_space(6.0);
         let mut rescan = false;
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             ui.heading("PKG Explorer");
             ui.separator();
             ui.add_enabled_ui(!self.scanning, |ui| {
@@ -236,9 +242,15 @@ impl PkgApp {
                 self.search.clear();
             }
             ui.separator();
-            for (i, kind) in [PkgKind::Deb, PkgKind::Rpm, PkgKind::Flatpak, PkgKind::Brew]
-                .into_iter()
-                .enumerate()
+            for (i, kind) in [
+                PkgKind::Deb,
+                PkgKind::Rpm,
+                PkgKind::Flatpak,
+                PkgKind::Brew,
+                PkgKind::Pacman,
+            ]
+            .into_iter()
+            .enumerate()
             {
                 ui.toggle_value(&mut self.kind_enabled[i], kind.label());
             }
@@ -506,7 +518,6 @@ mod tests {
             let mut output = ctx.run_ui(egui::RawInput::default(), |ctx| {
                 egui::CentralPanel::default().show(ctx, |ui| app.ui(ui, &mut frame));
             });
-            // No real renderer in tests: drop texture updates intentionally.
             output.textures_delta.clear();
             std::thread::sleep(Duration::from_millis(20));
         }
@@ -549,4 +560,3 @@ mod tests {
         pump(&mut app, &ctx, 5);
     }
 }
-

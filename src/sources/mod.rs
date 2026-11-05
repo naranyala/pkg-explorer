@@ -1,6 +1,7 @@
 pub mod brew;
 pub mod deb;
 pub mod flatpak;
+pub mod pacman;
 pub mod rpm;
 
 use crate::models::{Package, PackageDetails, PkgKind, ScanResult};
@@ -21,6 +22,7 @@ pub fn all_sources() -> Vec<Box<dyn Source>> {
         Box::new(deb::DebSource),
         Box::new(flatpak::FlatpakSource),
         Box::new(brew::BrewSource),
+        Box::new(pacman::PacmanSource),
     ]
 }
 
